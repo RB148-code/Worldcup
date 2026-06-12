@@ -17,13 +17,12 @@ st.set_page_config(
     page_icon= 'logo.png',
     layout="wide"
 )
-scaler = joblib.load('R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\scaler.pkl')
+scaler = joblib.load('2026 data\scaler.pkl')
 
 st.markdown("""
         <style>
         [data-testid="stSidebar"] {
             /* Use direct image URL or correct path */
-            background-image: url('file:///R:/H.H.H/FIFA WORLD CUP 2026/images_cup.jpg') !important;
             background-size: cover !important;
             background-position: center !important;
             background-repeat: no-repeat !important;
@@ -195,20 +194,20 @@ st.markdown("""
 #Dat and model loading
 @st.cache_data  # Caches data so it loads fast
 def load_data():
-    df = pd.read_csv("R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\players_info\\transfermarkt_players_clean.csv")
+    df = pd.read_csv("2026 data\\players_info\\transfermarkt_players_clean.csv")
     return df
 
 @st.cache_resource  # Caches models so they don't reload every time
 def load_models():
-    home_model = joblib.load("R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\home_score_model.pkl")
-    away_model = joblib.load("R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\away_score_model.pkl")
-    match_data = pd.read_csv("R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\Clean Updated data of 2026.csv")
+    home_model = joblib.load("2026 data\home_score_model.pkl")
+    away_model = joblib.load("2026 data\\away_score_model.pkl")
+    match_data = pd.read_csv("2026 data\Clean Updated data of 2026.csv")
     return home_model, away_model, match_data
 
 # Load everything
 players_df = load_data()
 home_model, away_model, match_data = load_models()
-standings = pd.read_csv('R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\Fifa cup standings.csv')
+standings = pd.read_csv('2026 data\Fifa cup standings.csv')
 
 #clustering
 @st.cache_resource
@@ -392,7 +391,7 @@ if page == "🏠 Home":
     # --- LOAD NATIONAL TEAMS DATA ---
     @st.cache_data
     def load_teams():
-        teams_df = pd.read_csv("R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\players_info\\national_teams.csv")
+        teams_df = pd.read_csv("2026 data\\players_info\\national_teams.csv")
        
         qualified_teams = standings['Team']
         teams_df = teams_df[teams_df["name"].isin(qualified_teams)].reset_index(drop=True)
@@ -429,7 +428,7 @@ if page == "🏠 Home":
 #2 Matcg predictor
 elif page == "🔮 Match Predictor":
     st.title("🔮 Match Outcome Predictor")
-    data_26 = pd.read_csv('R:\\H.H.H\\FIFA  WORLD CUP 2026\\2026 data\\Clean Updated data of 2026.csv')
+    data_26 = pd.read_csv('2026 data\Clean Updated data of 2026.csv')
     # data_26.columns = match_data.columns
 
     # Fix column name check
@@ -532,7 +531,6 @@ elif page == "👤 Player Dashboard":
     st.markdown("*Clustered by playing style | Data from Transfermarkt*")
     st.divider()
 
-    # --- FILTERS ---
     col1, col2, col3 = st.columns(3)
     with col1:
         selected_positions = st.multiselect(
@@ -550,7 +548,6 @@ elif page == "👤 Player Dashboard":
             options=sorted(players_df["club"].dropna().unique())
         )
 
-    # --- APPLY FILTERS ---
     filtered_df = players_df.copy()
     if selected_positions:
         filtered_df = filtered_df[filtered_df["position"].isin(selected_positions)]
@@ -562,7 +559,7 @@ elif page == "👤 Player Dashboard":
     if filtered_df.empty:
         st.warning("No players match your filters.")
     else:
-        # --- MAIN LAYOUT ---
+        
         col_plot, col_profile = st.columns([3, 1.3])
 
         with col_plot:
@@ -605,7 +602,7 @@ elif page == "👤 Player Dashboard":
 
         st.divider()
 
-        # --- BOTTOM CHARTS ---
+        
         col_top, col_radar = st.columns(2)
         with col_top:
             st.subheader("📊 Top Rated Players")
