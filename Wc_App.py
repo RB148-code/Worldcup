@@ -10,14 +10,18 @@ from sklearn.decomposition import PCA
 import time
 from datetime import datetime, timedelta, timezone
 import base64
+import os
 
 #Page configurations
 st.set_page_config(
-    page_title="2026 World Cup Hub",
+    page_title="2026 World Cup Simulator",
     page_icon= 'logo.png',
     layout="wide"
 )
-scaler = joblib.load('2026 data\scaler.pkl')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "2026 data")
+
+scaler = joblib.load(os.path.join(DATA_DIR,'scaler.pkl'))
 
 st.markdown("""
         <style>
@@ -194,20 +198,20 @@ st.markdown("""
 #Dat and model loading
 @st.cache_data  # Caches data so it loads fast
 def load_data():
-    df = pd.read_csv("2026 data\\players_info\\transfermarkt_players_clean.csv")
+    df = pd.read_csv(os.path.join(DATA_DIR, "players_info", "transfermarkt_players_clean.csv"))
     return df
 
 @st.cache_resource  # Caches models so they don't reload every time
 def load_models():
-    home_model = joblib.load("2026 data\home_score_model.pkl")
-    away_model = joblib.load("2026 data\\away_score_model.pkl")
-    match_data = pd.read_csv("2026 data\Clean Updated data of 2026.csv")
+    home_model = joblib.load(os.path.join(DATA_DIR, "home_score_model.pkl"))
+    away_model = joblib.load(os.path.join(DATA_DIR, "away_score_model.pkl"))
+    match_data = pd.read_csv(os.path.join(DATA_DIR, "Clean Updated data of 2026.csv"))
     return home_model, away_model, match_data
 
 # Load everything
 players_df = load_data()
 home_model, away_model, match_data = load_models()
-standings = pd.read_csv('2026 data\Fifa cup standings.csv')
+standings = pd.read_csv(os.path.join(DATA_DIR, 'Fifa cup standings.csv'))
 
 #clustering
 @st.cache_resource
@@ -391,7 +395,7 @@ if page == "🏠 Home":
     # --- LOAD NATIONAL TEAMS DATA ---
     @st.cache_data
     def load_teams():
-        teams_df = pd.read_csv("2026 data\\players_info\\national_teams.csv")
+        teams_df = pd.read_csv(os.path.join(DATA_DIR, "players_info", "national_teams.csv"))
        
         qualified_teams = standings['Team']
         teams_df = teams_df[teams_df["name"].isin(qualified_teams)].reset_index(drop=True)
@@ -428,7 +432,7 @@ if page == "🏠 Home":
 #2 Matcg predictor
 elif page == "🔮 Match Predictor":
     st.title("🔮 Match Outcome Predictor")
-    data_26 = pd.read_csv('2026 data\Clean Updated data of 2026.csv')
+    data_26 = pd.read_csv(os.path.join(DATA_DIR, 'Clean Updated data of 2026.csv'))
     # data_26.columns = match_data.columns
 
     # Fix column name check
